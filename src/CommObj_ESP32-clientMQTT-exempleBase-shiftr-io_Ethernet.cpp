@@ -30,7 +30,7 @@ byte mac[] = { 0x24, 0x6f, 0x28, 0x01, 0x01, 0xA4 };
 // *** SVP: UTILISER LES DÉFINITIONS DU FICHIER secrets.h ***//
 const char mqttHostProvider[]= "mqtt://" ;  //adresse du serveur MQTT (FQDN)
 const char mqttUsername[]= "technophyscal";  //usager du service MQTT de shiftr.io
-const char mqttDevice[]= "etudiant05" ;  //nom du dispositif connectant au service (etudiantXX)
+const char mqttDevice[]= "etudiant04" ;  //nom du dispositif connectant au service (etudiantXX)
 const char mqttUserPass[]= "xFDAtDxZJhxVLUqo" ; //token du dispositif (associé au device "etudiantXX")
 const char mqttSubscribeTo[]="LABO_4_MQTT_YE_MM";  //Nom du canal (topic) d'abonnement (peut commencer par "/")
 const char mqttPublishTo[]="LABO_4_MQTT_YE_MM";  //Nom du canal (topic) de publication (peut commencer par "/")
@@ -65,7 +65,7 @@ bool connectMQTT() {
   // Tant que la connexion avec MQTT broker n'est pas établie
   // synopsis (réf. librairie arduino-mqtt, MQTTClient.h, ligne 151): 
   //   bool connect(const char clientID[], const char username[], const char password[], bool skip = false);
-  while (!clientMQTT.connect("arduino", "public", "public")) {
+  while (!clientMQTT.connect( mqttDevice, mqttUsername, mqttUserPass)) {
     Serial.print(".");
     delay(1000);
   }
@@ -164,21 +164,21 @@ void loop() {
     if (clientMQTT.connected()) { 
 
       //Confection du message à envoyer:
-      //  String msg = [code]  //forger "Iteration: 0", puis "Iteration 1" ... //TODO
+     String msg = "bla bla " ; //forger "Iteration: 0", puis "Iteration 1" ... //TODO
 
       //Publication du message sur un topic:
-      // if ( clientMQTT.publish(LABO_4_MQTT_YE_MM, msg) ) {
-      //  // [code]  //Incrémente le compteur de message envoyé. Affiche l'information sur le moniteur série: //TODO
-      //   //Serial.println("> Publication msg("+String(senMsgCount)+") au sujet "+String(mqttPublishTo[])+" de "+String(dataSize)+" octets.");      
-      // } else {
-      //   //En cas d'erreur d'envoi, on affiche les détails:
-      //   Serial.println("> ERREUR publication: "+String(clientMQTT.lastError()));
-      //   if (clientMQTT.connected())
-      //     Serial.println("> clientMQTT connecté");
-      //   else
-      //     Serial.println("> clientMQTT NON-connecté");
-      //   //Serial.println("> Msg ("+String(dataSize)+") longueur est: "+msg); //TODO
-      // }//Fin if-then-else publication MQTT
+      if ( clientMQTT.publish(mqttPublishTo, msg) ) {
+       // [code]  //Incrémente le compteur de message envoyé. Affiche l'information sur le moniteur série: //TODO
+        //Serial.println("> Publication msg("+String(senMsgCount)+") au sujet "+String(mqttPublishTo[])+" de "+String(dataSize)+" octets.");      
+      } else {
+        //En cas d'erreur d'envoi, on affiche les détails:
+        Serial.println("> ERREUR publication: "+String(clientMQTT.lastError()));
+        if (clientMQTT.connected())
+          Serial.println("> clientMQTT connecté");
+        else
+          Serial.println("> clientMQTT NON-connecté");
+        //Serial.println("> Msg ("+String(dataSize)+") longueur est: "+msg); //TODO
+      }//Fin if-then-else publication MQTT
 
     } else {
       Serial.println("> Ne peut procéder: clientMQTT non-connecté!");
